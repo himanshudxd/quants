@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Banking Maths Speed Drill</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0e1a;
+  --panel:#111827;
+  --card:#161d2e;
+  --border:#1e2d45;
+  --cyan:#00d4ff;
+  --cyan-dim:rgba(0,212,255,0.12);
+  --green:#00e676;
+  --green-dim:rgba(0,230,118,0.1);
+  --red:#ff4757;
+  --red-dim:rgba(255,71,87,0.1);
+  --orange:#ff9f43;
+  --orange-dim:rgba(255,159,67,0.1);
+  --yellow:#ffd32a;
+  --text:#e8f0fe;
+  --text-dim:#5a7090;
+  --correct:#00e676;
+  --wrong:#ff4757;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* grid bg */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+}
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(135deg,#0d1526,#111827);
+  border-bottom:1px solid var(--border);
+  padding:1.8rem 1.5rem 1.5rem;
+  position:relative;
+  overflow:hidden;
+}
+header::after{
+  content:'';position:absolute;
+  top:-80px;right:-80px;
+  width:280px;height:280px;
+  background:radial-gradient(circle,rgba(0,212,255,0.08),transparent 70%);
+  pointer-events:none;
+}
+.header-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.logo{
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.8rem;font-weight:700;
+  color:var(--cyan);letter-spacing:0.05em;
+}
+.logo span{color:var(--text);font-weight:500;}
+.header-meta{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-dim);line-height:1.8;}
+.header-meta b{color:var(--cyan);}
+
+/* ── CATEGORY TABS ── */
+.cat-tabs{
+  display:flex;gap:0.4rem;padding:1rem 1.5rem;
+  background:var(--panel);border-bottom:1px solid var(--border);
+  overflow-x:auto;max-width:100%;
+}
+.cat-tabs::-webkit-scrollbar{height:3px;}
+.cat-tabs::-webkit-scrollbar-thumb{background:var(--border);}
+.cat-btn{
+  background:transparent;border:1px solid var(--border);
+  color:var(--text-dim);padding:0.45rem 1rem;
+  white-space:nowrap;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:0.68rem;
+  letter-spacing:0.08em;border-radius:2px;transition:all 0.2s;
+  flex-shrink:0;
+}
+.cat-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.cat-btn.active{background:var(--cyan);border-color:var(--cyan);color:#0a0e1a;font-weight:700;}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:960px;margin:0 auto;padding:1.5rem 1rem 5rem;}
+
+/* ── REFERENCE TABLE ── */
+.ref-section{display:none;}
+.ref-section.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.section-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.4rem;font-weight:700;
+  color:var(--cyan);letter-spacing:0.05em;
+  margin-bottom:0.3rem;
+}
+.section-sub{font-size:0.8rem;color:var(--text-dim);margin-bottom:1.5rem;font-family:'JetBrains Mono',monospace;}
+
+.ref-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:0.6rem;margin-bottom:2rem;
+}
+.ref-cell{
+  background:var(--card);border:1px solid var(--border);
+  padding:0.7rem 0.8rem;border-radius:3px;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:border-color 0.2s;cursor:default;
+}
+.ref-cell:hover{border-color:var(--cyan);}
+.ref-label{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--text-dim);}
+.ref-val{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:var(--cyan);}
+
+/* tables */
+.table-wrapper{overflow-x:auto;margin-bottom:2rem;}
+table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+th{
+  background:var(--cyan);color:#0a0e1a;
+  font-family:'Rajdhani',sans-serif;font-size:0.85rem;
+  font-weight:700;letter-spacing:0.05em;
+  padding:0.6rem 0.8rem;text-align:left;
+}
+td{
+  padding:0.55rem 0.8rem;border-bottom:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;color:var(--text);
+}
+tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+tr:hover td{background:var(--cyan-dim);}
+td:first-child{color:var(--orange);font-weight:700;}
+td.highlight{color:var(--yellow);font-weight:700;}
+
+/* fraction rows */
+.frac-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:0.6rem;margin-bottom:2rem;
+}
+.frac-cell{
+  background:var(--card);border:1px solid var(--border);
+  padding:0.75rem 1rem;border-radius:3px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.frac-lhs{font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--orange);}
+.frac-rhs{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--green);}
+
+/* ── SPEED DRILL ── */
+.drill-section{display:none;}
+.drill-section.active{display:block;animation:fadeUp 0.3s ease;}
+
+.drill-controls{
+  display:flex;align-items:center;gap:1rem;
+  margin-bottom:1.5rem;flex-wrap:wrap;
+}
+.drill-select{
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);padding:0.5rem 0.9rem;
+  font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+  border-radius:2px;outline:none;cursor:pointer;
+}
+.drill-select:focus{border-color:var(--cyan);}
+.start-btn{
+  background:var(--cyan);border:none;color:#0a0e1a;
+  padding:0.55rem 1.5rem;cursor:pointer;
+  font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;
+  letter-spacing:0.08em;border-radius:2px;
+  transition:opacity 0.2s;
+}
+.start-btn:hover{opacity:0.85;}
+.stop-btn{
+  background:var(--red);border:none;color:#fff;
+  padding:0.55rem 1.2rem;cursor:pointer;
+  font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;
+  letter-spacing:0.08em;border-radius:2px;
+  display:none;
+}
+
+/* drill arena */
+.drill-arena{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:4px;padding:2rem 1.5rem;
+  text-align:center;min-height:300px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.drill-arena::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(0,212,255,0.04),transparent 70%);
+  pointer-events:none;
+}
+.drill-q{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(2rem,8vw,4rem);
+  font-weight:700;color:var(--text);
+  margin-bottom:1.5rem;line-height:1.1;
+}
+.drill-q span{color:var(--cyan);}
+.drill-input{
+  background:var(--bg);border:2px solid var(--border);
+  color:var(--text);padding:0.7rem 1.2rem;
+  font-family:'Rajdhani',sans-serif;font-size:1.6rem;font-weight:700;
+  text-align:center;width:100%;max-width:250px;
+  border-radius:3px;outline:none;transition:border-color 0.2s;
+}
+.drill-input:focus{border-color:var(--cyan);}
+.drill-input.correct-flash{border-color:var(--green);background:var(--green-dim);animation:flash 0.3s ease;}
+.drill-input.wrong-flash{border-color:var(--red);background:var(--red-dim);animation:shake 0.3s ease;}
+@keyframes flash{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.drill-hint{
+  margin-top:1rem;font-size:0.82rem;
+  color:var(--text-dim);font-family:'JetBrains Mono',monospace;
+  min-height:1.2em;
+}
+.drill-hint.reveal{color:var(--orange);}
+
+/* stats bar */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:0.6rem;margin-bottom:1.5rem;
+}
+.stat-box{
+  background:var(--card);border:1px solid var(--border);
+  padding:0.7rem;text-align:center;border-radius:3px;
+}
+.stat-val{
+  font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;
+  color:var(--cyan);
+}
+.stat-lbl{font-size:0.65rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;margin-top:0.1rem;}
+
+/* timer ring */
+.timer-ring{
+  font-family:'JetBrains Mono',monospace;
+  font-size:2rem;font-weight:700;
+  color:var(--yellow);margin-bottom:0.5rem;
+}
+
+/* result panel */
+.result-panel{
+  background:var(--card);border:1px solid var(--border);
+  padding:2rem;text-align:center;border-radius:4px;
+  display:none;
+}
+.result-panel.show{display:block;animation:fadeUp 0.3s ease;}
+.result-score{
+  font-family:'Rajdhani',sans-serif;font-size:3.5rem;font-weight:700;
+  color:var(--cyan);
+}
+.result-label{color:var(--text-dim);font-size:0.8rem;font-family:'JetBrains Mono',monospace;margin-bottom:1.5rem;}
+.result-breakdown{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;
+  margin-bottom:1.5rem;
+}
+.rb-item{background:var(--bg);padding:0.8rem;border:1px solid var(--border);}
+.rb-num{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;}
+.rb-lbl{font-size:0.68rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
+.retry-btn{
+  background:transparent;border:1px solid var(--cyan);
+  color:var(--cyan);padding:0.6rem 1.5rem;cursor:pointer;
+  font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;
+  letter-spacing:0.08em;transition:all 0.2s;border-radius:2px;
+}
+.retry-btn:hover{background:var(--cyan);color:#0a0e1a;}
+
+/* shortcut cards */
+.shortcut-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.8rem;margin-bottom:2rem;}
+.sc-card{background:var(--card);border:1px solid var(--border);padding:1rem 1.2rem;border-radius:3px;}
+.sc-title{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--orange);margin-bottom:0.5rem;}
+.sc-body{font-size:0.83rem;color:var(--text-dim);line-height:1.7;font-family:'JetBrains Mono',monospace;}
+.sc-body b{color:var(--yellow);}
+.sc-example{margin-top:0.5rem;font-size:0.8rem;color:var(--cyan);font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="logo">CALC<span>DRILL</span></div>
+      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.2rem;font-family:'JetBrains Mono',monospace;">SBI PO · Banking Maths Speed Engine</div>
+    </div>
+    <div class="header-meta">
+      <b>Himanshu</b> · Patna<br/>
+      Exam: SBI PO Prelims + Mains<br/>
+      Target: &lt;30 sec/question
+    </div>
+  </div>
+</header>
+
+<div class="cat-tabs">
+  <button class="cat-btn active" onclick="showCat('squares',this)">Squares</button>
+  <button class="cat-btn" onclick="showCat('cubes',this)">Cubes</button>
+  <button class="cat-btn" onclick="showCat('tables',this)">Tables</button>
+  <button class="cat-btn" onclick="showCat('fractions',this)">Fractions %</button>
+  <button class="cat-btn" onclick="showCat('shortcuts',this)">Shortcuts</button>
+  <button class="cat-btn" onclick="showCat('drill',this)">⚡ Speed Drill</button>
+</div>
+
+<div class="main">
+
+<!-- ═══ SQUARES ═══ -->
+<div class="ref-section active" id="cat-squares">
+  <div class="section-title">Squares — 1 to 50</div>
+  <div class="section-sub">// memorise up to 30 cold. 31–50 use (a+b)² trick.</div>
+  <div class="ref-grid" id="squaresGrid"></div>
+  <div class="section-title" style="font-size:1rem;margin-bottom:0.8rem;">Square Roots of Perfect Squares</div>
+  <div class="ref-grid" id="sqrtGrid"></div>
+</div>
+
+<!-- ═══ CUBES ═══ -->
+<div class="ref-section" id="cat-cubes">
+  <div class="section-title">Cubes — 1 to 25</div>
+  <div class="section-sub">// must know 1–20 instantly. Cube roots 1–15 are exam essentials.</div>
+  <div class="ref-grid" id="cubesGrid"></div>
+  <div class="section-title" style="font-size:1rem;margin:1rem 0 0.8rem;">Cube Roots</div>
+  <div class="ref-grid" id="cbrGrid"></div>
+</div>
+
+<!-- ═══ TABLES ═══ -->
+<div class="ref-section" id="cat-tables">
+  <div class="section-title">Multiplication Tables — 12 to 25</div>
+  <div class="section-sub">// 2–11 assumed known. Focus: 12–20 (high frequency in DI).</div>
+  <div class="table-wrapper"><table id="tablesTable"></table></div>
+</div>
+
+<!-- ═══ FRACTIONS ═══ -->
+<div class="ref-section" id="cat-fractions">
+  <div class="section-title">Fraction ↔ Percentage ↔ Decimal</div>
+  <div class="section-sub">// these 40 conversions eliminate calculation in 60% of percentage questions</div>
+  <div class="frac-grid" id="fracGrid"></div>
+  <div class="section-title" style="font-size:1rem;margin:1rem 0 0.8rem;">Key Percentage Equivalents to Memorise</div>
+  <div class="ref-grid" id="percGrid"></div>
+</div>
+
+<!-- ═══ SHORTCUTS ═══ -->
+<div class="ref-section" id="cat-shortcuts">
+  <div class="section-title">Vedic & Banking Shortcuts</div>
+  <div class="section-sub">// learn 2–3 per day. Apply in drill immediately after.</div>
+  <div class="shortcut-grid" id="shortcutGrid"></div>
+</div>
+
+<!-- ═══ SPEED DRILL ═══ -->
+<div class="drill-section" id="cat-drill">
+  <div class="section-title">⚡ Speed Drill</div>
+  <div class="section-sub">// type answer + Enter. No calculator. Target: under 5 sec each.</div>
+
+  <div class="stats-bar">
+    <div class="stat-box"><div class="stat-val" id="s-score">0</div><div class="stat-lbl">CORRECT</div></div>
+    <div class="stat-box"><div class="stat-val" id="s-wrong" style="color:var(--red)">0</div><div class="stat-lbl">WRONG</div></div>
+    <div class="stat-box"><div class="stat-val" id="s-streak" style="color:var(--orange)">0</div><div class="stat-lbl">STREAK</div></div>
+    <div class="stat-box"><div class="stat-val" id="s-avg" style="color:var(--green)">--</div><div class="stat-lbl">AVG SEC</div></div>
+  </div>
+
+  <div class="drill-controls">
+    <select class="drill-select" id="drillType">
+      <option value="all">All Types Mixed</option>
+      <option value="squares">Squares (1–30)</option>
+      <option value="cubes">Cubes (1–15)</option>
+      <option value="sqrt">Square Roots</option>
+      <option value="tables">Tables (12–20)</option>
+      <option value="fractions">Fraction → %</option>
+      <option value="percent">% → Fraction</option>
+    </select>
+    <select class="drill-select" id="drillCount">
+      <option value="10">10 Questions</option>
+      <option value="20" selected>20 Questions</option>
+      <option value="30">30 Questions</option>
+      <option value="50">50 Questions</option>
+    </select>
+    <button class="start-btn" id="startBtn" onclick="startDrill()">START DRILL</button>
+    <button class="stop-btn" id="stopBtn" onclick="stopDrill()">STOP</button>
+  </div>
+
+  <div class="drill-arena" id="drillArena">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.9rem;color:var(--text-dim);">
+      Select type and press <span style="color:var(--cyan)">START DRILL</span>
+    </div>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-score" id="r-score">0/0</div>
+    <div class="result-label">DRILL COMPLETE</div>
+    <div class="result-breakdown">
+      <div class="rb-item"><div class="rb-num" id="r-correct" style="color:var(--green)">0</div><div class="rb-lbl">CORRECT</div></div>
+      <div class="rb-item"><div class="rb-num" id="r-wrong" style="color:var(--red)">0</div><div class="rb-lbl">WRONG</div></div>
+      <div class="rb-item"><div class="rb-num" id="r-time" style="color:var(--orange)">0s</div><div class="rb-lbl">AVG TIME</div></div>
+    </div>
+    <button class="retry-btn" onclick="retryDrill()">RETRY</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+
+// Squares 1–50
+function buildSquares(){
+  const g=document.getElementById('squaresGrid');
+  for(let i=1;i<=50;i++){
+    const c=document.createElement('div');c.className='ref-cell';
+    c.innerHTML=`<span class="ref-label">${i}²</span><span class="ref-val">${i*i}</span>`;
+    g.appendChild(c);
+  }
+  const sg=document.getElementById('sqrtGrid');
+  const sqrts=[[4,2],[9,3],[16,4],[25,5],[36,6],[49,7],[64,8],[81,9],[100,10],[121,11],[144,12],[169,13],[196,14],[225,15],[256,16],[289,17],[324,18],[361,19],[400,20],[441,21],[484,22],[529,23],[576,24],[625,25]];
+  sqrts.forEach(([n,r])=>{
+    const c=document.createElement('div');c.className='ref-cell';
+    c.innerHTML=`<span class="ref-label">√${n}</span><span class="ref-val">${r}</span>`;
+    sg.appendChild(c);
+  });
+}
+
+// Cubes 1–25
+function buildCubes(){
+  const g=document.getElementById('cubesGrid');
+  for(let i=1;i<=25;i++){
+    const c=document.createElement('div');c.className='ref-cell';
+    c.innerHTML=`<span class="ref-label">${i}³</span><span class="ref-val">${i*i*i}</span>`;
+    g.appendChild(c);
+  }
+  const cg=document.getElementById('cbrGrid');
+  const cbrs=[[1,1],[8,2],[27,3],[64,4],[125,5],[216,6],[343,7],[512,8],[729,9],[1000,10],[1331,11],[1728,12],[2197,13],[2744,14],[3375,15]];
+  cbrs.forEach(([n,r])=>{
+    const c=document.createElement('div');c.className='ref-cell';
+    c.innerHTML=`<span class="ref-label">∛${n}</span><span class="ref-val">${r}</span>`;
+    cg.appendChild(c);
+  });
+}
+
+// Tables 12–25
+function buildTables(){
+  const t=document.getElementById('tablesTable');
+  const headers=['×','1','2','3','4','5','6','7','8','9','10','11','12'];
+  let html=`<thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+  for(let n=12;n<=25;n++){
+    html+=`<tr><td>${n}</td>`;
+    for(let m=1;m<=12;m++) html+=`<td class="${m===10||m===12?'highlight':''}">${n*m}</td>`;
+    html+=`</tr>`;
+  }
+  html+='</tbody>';
+  t.innerHTML=html;
+}
+
+// Fractions
+function buildFractions(){
+  const fracs=[
+    ['1/2','50%','0.5'],['1/3','33.33%','0.333'],['2/3','66.67%','0.667'],
+    ['1/4','25%','0.25'],['3/4','75%','0.75'],['1/5','20%','0.2'],
+    ['2/5','40%','0.4'],['3/5','60%','0.6'],['4/5','80%','0.8'],
+    ['1/6','16.67%','0.167'],['5/6','83.33%','0.833'],['1/7','14.28%','0.143'],
+    ['2/7','28.57%','0.286'],['3/7','42.86%','0.429'],['1/8','12.5%','0.125'],
+    ['3/8','37.5%','0.375'],['5/8','62.5%','0.625'],['7/8','87.5%','0.875'],
+    ['1/9','11.11%','0.111'],['2/9','22.22%','0.222'],['4/9','44.44%','0.444'],
+    ['1/10','10%','0.1'],['1/11','9.09%','0.0909'],['1/12','8.33%','0.083'],
+    ['1/15','6.67%','0.067'],['1/16','6.25%','0.0625'],['1/20','5%','0.05'],
+    ['1/25','4%','0.04'],['1/50','2%','0.02'],['1/100','1%','0.01'],
+  ];
+  const g=document.getElementById('fracGrid');
+  fracs.forEach(([f,p,d])=>{
+    const c=document.createElement('div');c.className='frac-cell';
+    c.innerHTML=`<span class="frac-lhs">${f} = ${d}</span><span class="frac-rhs">${p}</span>`;
+    g.appendChild(c);
+  });
+
+  const percs=[
+    ['10% of X','X÷10'],['20% of X','X÷5'],['25% of X','X÷4'],
+    ['50% of X','X÷2'],['5% of X','X÷20'],['1% of X','X÷100'],
+    ['15% of X','10%+5%'],['12.5%','X÷8'],['33.33%','X÷3'],['66.67%','2X÷3'],
+  ];
+  const pg=document.getElementById('percGrid');
+  percs.forEach(([k,v])=>{
+    const c=document.createElement('div');c.className='ref-cell';
+    c.innerHTML=`<span class="ref-label" style="font-size:0.7rem">${k}</span><span class="ref-val" style="font-size:0.85rem;color:var(--green)">${v}</span>`;
+    pg.appendChild(c);
+  });
+}
+
+// Shortcuts
+function buildShortcuts(){
+  const shortcuts=[
+    {title:'Squaring numbers ending in 5',
+     body:'(a5)² = [a×(a+1)] followed by 25\n<b>Example:</b>',
+     ex:'65² → 6×7=42 → answer: 4225\n85² → 8×9=72 → answer: 7225'},
+    {title:'Multiply by 11',
+     body:'Write first digit, add adjacent digits in middle, write last digit.\n<b>Example:</b>',
+     ex:'47 × 11 → 4_(4+7)_7 → 4_11_7 → 517'},
+    {title:'Multiply near 100 (Vedic)',
+     body:'Find difference from 100. Cross-add one number with other\'s diff. Multiply diffs.\n<b>Example:</b>',
+     ex:'97×96 → diffs: 3,4 → cross: 97-4=93 → 93|12 → 9312'},
+    {title:'% of a number',
+     body:'a% of b = b% of a\nAlways pick the easier direction.\n<b>Example:</b>',
+     ex:'8% of 75 = 75% of 8 = 6\n4% of 250 = 250% of 4 = 10'},
+    {title:'Squaring numbers near 50',
+     body:'(50±d)² = (25±d) hundreds + d²\n<b>Example:</b>',
+     ex:'52² → (25+2)hundreds + 4 → 2704\n48² → (25-2)hundreds + 4 → 2304'},
+    {title:'Multiply by 5',
+     body:'Divide by 2, multiply by 10 (or just halve and add zero)\n<b>Example:</b>',
+     ex:'348 × 5 → 348÷2 = 174 → 1740'},
+    {title:'Multiply by 25',
+     body:'Divide by 4, multiply by 100\n<b>Example:</b>',
+     ex:'48 × 25 → 48÷4 = 12 → 1200\n36 × 25 → 36÷4 = 9 → 900'},
+    {title:'Finding % increase/decrease',
+     body:'% change = (change ÷ original) × 100\nFor quick mental calc, use fraction form.\n<b>Example:</b>',
+     ex:'320→400: change=80, 80/320=1/4=25% increase'},
+    {title:'Digit Sum (Casting Out 9s)',
+     body:'Add digits until single digit. Useful for quick answer verification.\n<b>Example:</b>',
+     ex:'456 × 78: digit sum 456→6, 78→6, 6×6=36→9\nCheck your answer\'s digit sum = 9 ✓'},
+    {title:'Square of numbers near base',
+     body:'(a+b)² = a² + 2ab + b²\nChoose nearest round number as base.\n<b>Example:</b>',
+     ex:'103² = 100²+2×100×3+9 = 10609\n98² = 100²-2×100×2+4 = 9604'},
+    {title:'Ratio → Percentage shortcut',
+     body:'Multiply top & bottom to get denominator = 100\nOr use known fraction equivalents.\n<b>Example:</b>',
+     ex:'7:20 → 7/20 × 100 = 35%\n3:8 → 3/8 = 37.5%'},
+    {title:'Compound Interest shortcut (2 years)',
+     body:'CI = P × r/100 × (2 + r/100)\nFor small r: CI ≈ 2×SI + SI×r/100\n<b>Example:</b>',
+     ex:'P=1000, r=10%, 2yr\nSI=200, extra=200×10%=20\nCI=220'}
+  ];
+  const g=document.getElementById('shortcutGrid');
+  shortcuts.forEach(s=>{
+    const c=document.createElement('div');c.className='sc-card';
+    c.innerHTML=`<div class="sc-title">${s.title}</div><div class="sc-body">${s.body.replace(/\n/g,'<br>')}</div><div class="sc-example">${s.ex.replace(/\n/g,'<br>')}</div>`;
+    g.appendChild(c);
+  });
+}
+
+/* ═══════════════════════════════════════
+   DRILL ENGINE
+═══════════════════════════════════════ */
+let drillQuestions=[];
+let drillIdx=0;
+let drillCorrect=0;
+let drillWrong=0;
+let drillStreak=0;
+let drillTimes=[];
+let qStartTime=0;
+let drillActive=false;
+let totalQ=20;
+
+function generateQuestions(type,count){
+  const pool=[];
+  const types=type==='all'?['squares','cubes','sqrt','tables','fractions','percent']:[type];
+
+  types.forEach(t=>{
+    if(t==='squares'){
+      for(let i=1;i<=30;i++) pool.push({q:`${i}² = ?`,a:i*i,hint:`${i}×${i}`});
+    }
+    if(t==='cubes'){
+      for(let i=1;i<=15;i++) pool.push({q:`${i}³ = ?`,a:i*i*i,hint:`${i}×${i}×${i}`});
+    }
+    if(t==='sqrt'){
+      const sq=[[4,2],[9,3],[16,4],[25,5],[36,6],[49,7],[64,8],[81,9],[100,10],[121,11],[144,12],[169,13],[196,14],[225,15],[256,16],[289,17],[324,18],[361,19],[400,20],[441,21],[484,22],[529,23],[576,24],[625,25]];
+      sq.forEach(([n,r])=>pool.push({q:`√${n} = ?`,a:r,hint:`perfect square`}));
+    }
+    if(t==='tables'){
+      for(let n=12;n<=20;n++)
+        for(let m=2;m<=12;m++)
+          pool.push({q:`${n} × ${m} = ?`,a:n*m,hint:`${n}×${m}`});
+    }
+    if(t==='fractions'){
+      const fr=[[1,2,50],[1,3,33],[2,3,67],[1,4,25],[3,4,75],[1,5,20],[2,5,40],[3,5,60],[4,5,80],[1,6,17],[1,8,13],[3,8,38],[5,8,63],[1,9,11],[1,10,10],[1,20,5],[1,25,4]];
+      fr.forEach(([n,d,p])=>pool.push({q:`${n}/${d} as % (nearest whole) = ?`,a:p,hint:`${n}/${d} × 100`}));
+    }
+    if(t==='percent'){
+      const pr=[[50,'1/2'],[25,'1/4'],[20,'1/5'],[10,'1/10'],[33,'1/3'],[75,'3/4'],[40,'2/5'],[60,'3/5'],[12,'1/8'],[5,'1/20']];
+      pr.forEach(([p,f])=>pool.push({q:`${p}% as a fraction = ?`,a:f,hint:`simplify ${p}/100`}));
+    }
+  });
+
+  // shuffle and pick count
+  for(let i=pool.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [pool[i],pool[j]]=[pool[j],pool[i]];
+  }
+  return pool.slice(0,count);
+}
+
+function startDrill(){
+  totalQ=parseInt(document.getElementById('drillCount').value);
+  const type=document.getElementById('drillType').value;
+  drillQuestions=generateQuestions(type,totalQ);
+  drillIdx=0;drillCorrect=0;drillWrong=0;drillStreak=0;drillTimes=[];
+  drillActive=true;
+  document.getElementById('startBtn').style.display='none';
+  document.getElementById('stopBtn').style.display='inline-block';
+  document.getElementById('resultPanel').classList.remove('show');
+  updateStats();
+  showQuestion();
+}
+
+function showQuestion(){
+  if(drillIdx>=drillQuestions.length){endDrill();return;}
+  const q=drillQuestions[drillIdx];
+  qStartTime=Date.now();
+  const arena=document.getElementById('drillArena');
+  arena.innerHTML=`
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--text-dim);margin-bottom:0.5rem;">
+      Q ${drillIdx+1} / ${drillQuestions.length}
+    </div>
+    <div class="drill-q">${q.q}</div>
+    <input class="drill-input" id="drillInput" type="text" autocomplete="off"
+      placeholder="answer" onkeydown="handleKey(event)"/>
+    <div class="drill-hint" id="drillHint">Press Enter to submit · Tab to skip</div>`;
+  setTimeout(()=>{const inp=document.getElementById('drillInput');if(inp)inp.focus();},50);
+}
+
+function handleKey(e){
+  if(e.key==='Enter'){submitAnswer();}
+  else if(e.key==='Tab'){e.preventDefault();skipQuestion();}
+}
+
+function submitAnswer(){
+  const inp=document.getElementById('drillInput');
+  if(!inp)return;
+  const userVal=inp.value.trim().toLowerCase().replace(/\s/g,'');
+  const correct=String(drillQuestions[drillIdx].a).toLowerCase().replace(/\s/g,'');
+  const elapsed=((Date.now()-qStartTime)/1000).toFixed(1);
+  drillTimes.push(parseFloat(elapsed));
+
+  if(userVal===correct){
+    drillCorrect++;drillStreak++;
+    inp.classList.add('correct-flash');
+    document.getElementById('drillHint').textContent=`✓ Correct! ${elapsed}s`;
+    document.getElementById('drillHint').className='drill-hint reveal';
+    setTimeout(()=>{drillIdx++;updateStats();showQuestion();},500);
+  } else {
+    drillWrong++;drillStreak=0;
+    inp.classList.add('wrong-flash');
+    inp.disabled=true;
+    const h=document.getElementById('drillHint');
+    h.textContent=`✗ Answer: ${drillQuestions[drillIdx].a}  (${drillQuestions[drillIdx].hint})`;
+    h.className='drill-hint reveal';
+    setTimeout(()=>{drillIdx++;updateStats();showQuestion();},1200);
+  }
+  updateStats();
+}
+
+function skipQuestion(){
+  drillWrong++;drillStreak=0;
+  drillTimes.push(0);
+  drillIdx++;updateStats();showQuestion();
+}
+
+function updateStats(){
+  document.getElementById('s-score').textContent=drillCorrect;
+  document.getElementById('s-wrong').textContent=drillWrong;
+  document.getElementById('s-streak').textContent=drillStreak;
+  const avg=drillTimes.length?((drillTimes.reduce((a,b)=>a+b,0)/drillTimes.length).toFixed(1)):'--';
+  document.getElementById('s-avg').textContent=avg==='NaN'?'--':avg+'s';
+}
+
+function endDrill(){
+  drillActive=false;
+  document.getElementById('drillArena').innerHTML='<div style="color:var(--text-dim);font-family:\'JetBrains Mono\',monospace;font-size:0.9rem;">Drill complete. See results below.</div>';
+  document.getElementById('startBtn').style.display='inline-block';
+  document.getElementById('stopBtn').style.display='none';
+  const avg=drillTimes.length?(drillTimes.reduce((a,b)=>a+b,0)/drillTimes.length).toFixed(1):0;
+  document.getElementById('r-score').textContent=`${drillCorrect}/${drillQuestions.length}`;
+  document.getElementById('r-correct').textContent=drillCorrect;
+  document.getElementById('r-wrong').textContent=drillWrong;
+  document.getElementById('r-time').textContent=avg+'s';
+  document.getElementById('resultPanel').classList.add('show');
+}
+
+function stopDrill(){endDrill();}
+
+function retryDrill(){
+  document.getElementById('resultPanel').classList.remove('show');
+  startDrill();
+}
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function showCat(name,btn){
+  document.querySelectorAll('.ref-section,.drill-section').forEach(s=>{
+    s.classList.remove('active');
+  });
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('cat-'+name);
+  if(el){el.classList.add('active');}
+  btn.classList.add('active');
+}
+
+/* INIT */
+buildSquares();
+buildCubes();
+buildTables();
+buildFractions();
+buildShortcuts();
+</script>
+</body>
+</html>
